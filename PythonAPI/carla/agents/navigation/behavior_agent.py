@@ -73,6 +73,8 @@ class BehaviorAgent(Agent):
 
         elif behavior == 'aggressive':
             self.behavior = Aggressive()
+        else:
+            self.behavior = behavior
 
     def update_information(self, world):
         """
