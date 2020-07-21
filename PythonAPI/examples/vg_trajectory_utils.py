@@ -1,13 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import filtfilt
+
 from scipy.interpolate import CubicSpline
 import pdb
 
 def fix_angle( angle ):
 	""" Given an angle, adjusts it to lie within a +/- PI range """
 	return (angle + np.pi) % (2 * np.pi) - np.pi # https://stackoverflow.com/questions/15927755/opposite-of-numpy-unwrap
-
 
 def extract_path_from_waypoints( waypoints ):
 	""" Given a list of Carla waypoints, returns the corresponding path (x, y, yaw) in global frame """
@@ -22,7 +22,6 @@ def extract_path_from_waypoints( waypoints ):
 	diff_xy = np.diff(way_xy, axis=0)
 	way_s   = np.cumsum( np.sqrt( np.sum( np.square(diff_xy), axis=1) ) )
 	way_s   = np.insert( way_s, 0, [0.0] )
-
 
 	return way_s, way_xy, way_yaw  # s, x, y, yaw
 
@@ -99,7 +98,9 @@ class FrenetTrajectoryHandler(object):
 			plt.legend()
 
 			plt.figure()
+
 			plt.plot(s_frenet, curv_frenet, 'b', label='filt')
+
 			plt.plot(s_frenet[:-1], curv_frenet_raw, 'k.', label='raw')
 			plt.xlabel('S')
 			plt.ylabel('Curv')
@@ -121,6 +122,7 @@ class FrenetTrajectoryHandler(object):
 		# and s of the query point are the same for simplicity.
 		s_waypoint   = self.trajectory[closest_index, 0]
 		xy_waypoint  = self.trajectory[closest_index, 1:3]	
+
 		psi_waypoint = self.trajectory[closest_index, 3]
 
 		rot_global_to_frenet = np.array([[ np.cos(psi_waypoint), np.sin(psi_waypoint)], \
@@ -146,8 +148,6 @@ class FrenetTrajectoryHandler(object):
 				                   (s_waypoint, error_frenet[1], psi_error, self.trajectory[closest_index,4]))
 
 			plt.draw(); plt.pause(0.01)
-
-
 
 		# Note: handling e_s can be ugly at kinks in the path (not smooth curvature)
 		# so for simplicity, we can just ignore the e_s component and assume it's small.
@@ -233,4 +233,3 @@ if __name__ == '__main__':
 	fth = FrenetTrajectoryHandler(s, xys, psis)
 	curvs = fth.get_curvatures_at_s(np.array([0.0, 1.0, 5.0]))
 	print(curvs)
-
