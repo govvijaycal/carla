@@ -62,7 +62,7 @@ class BehaviorAgent(Agent):
         self.light_id_to_ignore = -1
         self.min_speed = 5
         self.behavior = None
-        self._sampling_resolution = 4.5
+        self._sampling_resolution = 2.0
 
         # Parameters for agent behavior
         if behavior == 'cautious':
@@ -132,11 +132,12 @@ class BehaviorAgent(Agent):
 
         print("Target almost reached, setting new destination...")
         random.shuffle(spawn_points)
-        new_start = self._local_planner.waypoints_queue[-1][0].transform.location
+        #new_start = self._local_planner.waypoints_queue[-1][0].transform.location
+        new_start = self.vehicle.get_location()
         destination = spawn_points[0].location if spawn_points[0].location != new_start else spawn_points[1].location
         print("New destination: " + str(destination))
 
-        self.set_destination(new_start, destination)
+        self.set_destination(new_start, destination, clean=True)
 
     def _trace_route(self, start_waypoint, end_waypoint):
         """
